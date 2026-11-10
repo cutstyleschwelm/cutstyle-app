@@ -1,4 +1,4 @@
-const CACHE_NAME = "cutstyle-v2-cloud";
+const CACHE_NAME = "cutstyle-cloud-v2-fix";
 const FILES = [
   "./",
   "./index.html",
