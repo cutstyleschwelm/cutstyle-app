@@ -1,4 +1,4 @@
-const CACHE_NAME = "cutstyle-v13-kunde-autocomplete";
+const CACHE_NAME = "cutstyle-v14-touch-date-time";
 const FILES = [
   "./",
   "./index.html",
