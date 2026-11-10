@@ -6,7 +6,18 @@
 <title>CutStyle – Salonverwaltung</title><link rel="stylesheet" href="style.css">
 </head>
 <body>
-<header class="top"><div class="brand"><span class="mark">C</span><div><b>CutStyle</b><small>SALON MANAGEMENT</small></div></div><div class="topright"><span id="today"></span><span class="status">Demo-Modus</span></div></header>
+<div id="loginScreen" class="login-screen" hidden>
+  <form id="loginForm" class="login-card">
+    <div class="brand login-brand"><span class="mark">C</span><div><b>CutStyle</b><small>SALONVERWALTUNG</small></div></div>
+    <h1>Anmelden</h1><p class="muted">Bitte melde dich mit deinem CutStyle-Konto an.</p>
+    <label>E-Mail-Adresse<input id="loginEmail" type="email" autocomplete="username" required placeholder="name@beispiel.de"></label>
+    <label>Passwort<input id="loginPassword" type="password" autocomplete="current-password" required placeholder="Passwort"></label>
+    <button class="primary" type="submit">Anmelden</button>
+    <div id="loginMessage" class="message" role="status"></div>
+  </form>
+</div>
+<div id="appShell" hidden>
+<header class="top"><div class="brand"><span class="mark">C</span><div><b>CutStyle</b><small>SALON MANAGEMENT</small></div></div><div class="topright"><span id="today"></span><span id="connectionStatus" class="status">Nicht verbunden</span><button id="logoutBtn" class="logout">Abmelden</button><small id="signedInAs"></small></div></header>
 <div class="shell">
 <aside class="sidebar">
   <button class="nav active" data-page="dashboard">Übersicht</button>
@@ -16,7 +27,7 @@
   <button class="nav" data-page="staff">Mitarbeiter</button>
   <div class="sidefoot">CUTSTYLE · SCHWELM<br><small>Version 1.0 – Entwurf</small></div>
 </aside>
-<main id="main">
+<main id="main"><div id="appMessage" class="message" role="status"></div>
 <section class="page show" id="dashboard">
   <div class="heading"><div><p class="eyebrow">WILLKOMMEN ZURÜCK</p><h1>Übersicht</h1><p class="muted">Dein Salon auf einen Blick.</p></div><button class="primary" data-go="appointments">+ Neuer Termin</button></div>
   <div class="stats"><article><span>Termine heute</span><strong id="statAppointments">0</strong></article><article><span>Kunden gespeichert</span><strong id="statCustomers">0</strong></article><article><span>Mitarbeiter</span><strong id="statStaff">0</strong></article></div>

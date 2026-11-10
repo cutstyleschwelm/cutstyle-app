@@ -1,25 +1,16 @@
-CUTSTYLE V1 – ERSTE TESTVERSION
+CutStyle – Cloud-Version (erste Synchronisationsversion)
 
-Start:
-1. ZIP entpacken.
-2. index.html im aktuellen Browser öffnen.
-3. Kunden, Termine, Leistungen und Mitarbeiter testweise anlegen.
+Sprache der App: Deutsch.
+Backend: Supabase Free. Die App verwendet die Supabase Publishable Key im Browser und meldet Benutzer per E-Mail/Passwort an.
 
 WICHTIG:
-- Dies ist ein lokaler Prototyp. Daten werden nur im Browser dieses Geräts gespeichert.
-- Noch keine Benutzerkonten, Cloud-Synchronisierung, gemeinsame Datenbank oder Google-Kalender-Synchronisierung.
-- Noch KEINE echten Kundendaten eintragen.
-- Keine Fotos und keine E-Mail-Funktion.
-- Die Damen-, Herren- und Kosmetikpreise aus der hochgeladenen CutStyle-Preisliste vom 26.10.2026 sind als Startkatalog eingetragen. Bitte kontrolliere die Werte vor dem produktiven Einsatz.
+- Niemals einen Supabase Secret Key oder service_role-Key in diese App eintragen.
+- Der Zugriff wird über Supabase Auth und Row Level Security (RLS) begrenzt.
+- Diese Version ist für den internen Salonbetrieb vorgesehen. Öffentliche Online-Terminbuchung ist noch NICHT aktiviert.
+- Vor echten Kundendaten bitte zunächst mit Testdaten auf Telefon/Tablet prüfen.
+- Supabase Free ist ein kostenloser Tarif mit Nutzungsgrenzen; kostenlos bedeutet nicht unbegrenzt oder garantiert dauerhaft verfügbar.
 
-Nächster Entwicklungsschritt:
-Kostenlose Cloud-Datenbank und Mitarbeiter-Anmeldung einrichten, danach Google-Kalender-Anbindung.
+Dateien:
+index.html, app.js, style.css, sw.js, manifest.webmanifest, Icons.
 
-
-PWA / APP-INSTALLATION:
-- Die App-Dateien enthalten jetzt Manifest, App-Icons und Service Worker.
-- Für die Installation auf iPhone/Android/Desktop muss die App über HTTPS bereitgestellt werden.
-- iPhone: Safari öffnen > Teilen > Zum Home-Bildschirm.
-- Android/Chrome: Menü > App installieren bzw. Zum Startbildschirm hinzufügen.
-- Noch nicht veröffentlicht/gehostet. Offline-Caching ist vorbereitet.
-- Daten bleiben weiterhin lokal in dem jeweiligen Browser; geräteübergreifende Synchronisierung ist noch nicht aktiv.
+Deployment: Ersetze die bisherigen Dateien im GitHub-Repository cutstyle-app durch diese Dateien und warte auf GitHub Pages.
