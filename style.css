@@ -51,3 +51,13 @@
 .time-slot.selected{background:#987344;color:#fff;border-color:#987344;box-shadow:0 3px 9px #98734435}
 @media(max-width:760px){.time-picker-toggle{min-height:70px;font-size:22px}.time-picker-panel{padding:13px}.time-slots{grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;max-height:320px}.time-slot{min-height:60px;font-size:17px}}
 @media(min-width:761px){.time-slots{grid-template-columns:repeat(4,minmax(0,1fr))}}
+
+/* V17: sichere Termin-Stornierung statt sofortigem Löschen */
+.appointment-status{display:inline-block;font-size:11px;font-weight:700;padding:4px 8px;border-radius:20px;margin-bottom:6px}
+.appointment-status.booked{background:#e8f2e9;color:#28633a}
+.appointment-status.cancelled{background:#f8e9e7;color:#9b342c}
+.appointment-actions{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+.cancelbtn{border-color:#d8b7a8;color:#91432f}
+.dangerbtn{border-color:#e0c1bd;color:#a12c24}
+.cancelled-row{opacity:.72;background:#faf8f6}
+@media(max-width:760px){.appointment-actions{min-width:150px}.appointment-actions .smallbtn{min-height:40px;padding:8px 10px}}

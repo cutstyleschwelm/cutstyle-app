@@ -1,4 +1,4 @@
-const CACHE_NAME = "cutstyle-v16-round-time-picker";
+const CACHE_NAME = "cutstyle-v17-appointment-cancellation";
 const FILES = [
   "./",
   "./index.html",
