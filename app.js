@@ -41,14 +41,14 @@ async function startApp(){
 async function loadCloudData(){
   showMessage('Daten werden synchronisiert …');
   const results=await Promise.all([
-    supabase.from('customers').select('*').order('last_name').order('first_name'),
+    supabase.from('customers').select('*'),
     supabase.from('appointments').select('*').order('start_at'),
     supabase.from('services').select('*').eq('active',true).order('category').order('name'),
     supabase.from('staff').select('*').eq('active',true).order('name')
   ]);
   const err=results.find(r=>r.error)?.error;
   if(err){showMessage('Daten konnten nicht geladen werden: '+err.message,true);return;}
-  customers=results[0].data.map(c=>({...c,name:[c.first_name,c.last_name].filter(Boolean).join(' '),phone:c.phone||'',notes:c.hair_notes||c.general_notes||'',formula:c.color_formula||''}));
+  customers=(results[0].data||[]).map(c=>{const fullName=[c.first_name,c.last_name].filter(Boolean).join(' ') || c.name || c.full_name || c.customer_name || '';return {...c,name:fullName,phone:c.phone||c.telefon||'',notes:c.hair_notes||c.general_notes||c.notes||'',formula:c.color_formula||c.formula||''};}).sort((a,b)=>a.name.localeCompare(b.name,'de'));
   appointments=results[1].data.map(a=>{const d=new Date(a.start_at);return {...a,date:d.toLocaleDateString('en-CA'),time:d.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'}),customerId:a.customer_id,staffId:a.staff_id,service:a.service_name||'',price:a.price==null?'':String(a.price)+' €',duration:a.end_at?Math.round((new Date(a.end_at)-d)/60000):90,note:a.notes||''};});
   services=results[2].data.map(s=>({...s,short:s.price_note||(s.price_from!=null?`${s.price_from} €`:''),long:s.price_to!=null?`${s.price_to} €`:''}));
   staff=results[3].data;
@@ -59,18 +59,21 @@ async function loadCloudData(){
     const {data}=await supabase.from('services').select('*').eq('active',true).order('category').order('name');
     services=data||[];
   }
-  render();showMessage('Alle Daten sind mit der CutStyle-Cloud synchronisiert.');
+  render();
+  if(customers.length===0){showMessage('Cloud verbunden, aber Supabase liefert 0 Kunden. Die Kundendaten sind nicht gelöscht; bitte prüfe im nächsten Schritt die Leseberechtigung (RLS) der Tabelle customers.',true);}
+  else {showMessage(`${customers.length} Kunden und alle weiteren Daten wurden aus der CutStyle-Cloud geladen.`);}
 }
 
 $('customerForm').onsubmit=async e=>{e.preventDefault();const full=$('customerName').value.trim().split(/\s+/);const first=full.shift()||'';const last=full.join(' ');const row={first_name:first,last_name:last||null,phone:$('customerPhone').value.trim()||null,hair_notes:$('customerNotes').value.trim()||null,color_formula:$('customerFormula').value.trim()||null};const {error}=await supabase.from('customers').insert(row);if(error){showMessage('Kunde konnte nicht gespeichert werden: '+error.message,true);return;}e.target.reset();await loadCloudData();};
 $('appointmentForm').onsubmit=async e=>{e.preventDefault();const service=services.find(s=>String(s.id)===$('apptService').value);const customer=customers.find(c=>String(c.id)===$('apptCustomer').value);const date=$('apptDate').value,time=$('apptTime').value;const start=new Date(`${date}T${time}:00`);const end=new Date(start.getTime()+Number($('apptDuration').value||90)*60000);const row={customer_id:customer?.id||null,staff_id:$('apptStaff').value||null,service_id:service?.id||null,service_name:service?.name||'',price:service?.price_from??null,start_at:start.toISOString(),end_at:end.toISOString(),status:'booked',notes:$('apptNote').value.trim()||null};const {error}=await supabase.from('appointments').insert(row);if(error){showMessage('Termin konnte nicht gespeichert werden: '+error.message,true);return;}e.target.reset();$('apptDate').value=today;$('apptDuration').value=90;await loadCloudData();};
-$('serviceForm').onsubmit=async e=>{e.preventDefault();const {error}=await supabase.from('services').insert({category:$('serviceCategory').value,name:$('serviceName').value.trim(),price_note:$('serviceShort').value.trim()||null,price_to:null,active:true});if(error){showMessage('Leistung konnte nicht gespeichert werden: '+error.message,true);return;}e.target.reset();await loadCloudData();};
+$('serviceForm').onsubmit=async e=>{e.preventDefault();const {error}=await supabase.from('services').insert({category:$('serviceCategory').value,name:$('serviceName').value.trim(),price_note:$('serviceShort').value.trim()||null,price_to:$('serviceLong').value.trim()||null,active:true});if(error){showMessage('Leistung konnte nicht gespeichert werden: '+error.message,true);return;}e.target.reset();await loadCloudData();};
 $('staffForm').onsubmit=async e=>{e.preventDefault();const {error}=await supabase.from('staff').insert({name:$('staffName').value.trim(),active:true});if(error){showMessage('Mitarbeiter konnte nicht gespeichert werden: '+error.message,true);return;}e.target.reset();await loadCloudData();};
 $('customerSearch').oninput=render;
+$('refreshDataBtn').onclick=()=>loadCloudData();
 window.del=async(table,id)=>{if(!confirm('Diesen Eintrag wirklich löschen?'))return;const {error}=await supabase.from(table).delete().eq('id',id);if(error){showMessage('Löschen fehlgeschlagen: '+error.message,true);return;}await loadCloudData();};
 function render(){
  $('statAppointments').textContent=appointments.filter(a=>a.date===today).length;$('statCustomers').textContent=customers.length;$('statStaff').textContent=staff.length;
- $('apptCustomer').innerHTML='<option value="">Kunde auswählen</option>'+customers.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join('');
+ $('apptCustomer').innerHTML='<option value="">'+(customers.length?'Kunde auswählen':'Noch keine Kunden gespeichert')+'</option>'+customers.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join('');
  $('apptService').innerHTML='<option value="">Leistung auswählen</option>'+services.map(s=>`<option value="${s.id}">${esc(s.category)} · ${esc(s.name)} (${esc(s.short||s.long||'Preis auf Anfrage')})</option>`).join('');
  $('apptStaff').innerHTML='<option value="">Nicht zugewiesen</option>'+staff.map(s=>`<option value="${s.id}">${esc(s.name)}</option>`).join('');
  const ap=appointments.slice().sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time));
