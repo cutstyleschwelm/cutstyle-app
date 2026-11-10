@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#171512"><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-192.png">
+<title>CutStyle – Salonverwaltung</title><link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top"><div class="brand"><span class="mark">C</span><div><b>CutStyle</b><small>SALON MANAGEMENT</small></div></div><div class="topright"><span id="today"></span><span class="status">Demo-Modus</span></div></header>
+<div class="shell">
+<aside class="sidebar">
+  <button class="nav active" data-page="dashboard">Übersicht</button>
+  <button class="nav" data-page="appointments">Termine</button>
+  <button class="nav" data-page="customers">Kundenkartei</button>
+  <button class="nav" data-page="services">Leistungen & Preise</button>
+  <button class="nav" data-page="staff">Mitarbeiter</button>
+  <div class="sidefoot">CUTSTYLE · SCHWELM<br><small>Version 1.0 – Entwurf</small></div>
+</aside>
+<main id="main">
+<section class="page show" id="dashboard">
+  <div class="heading"><div><p class="eyebrow">WILLKOMMEN ZURÜCK</p><h1>Übersicht</h1><p class="muted">Dein Salon auf einen Blick.</p></div><button class="primary" data-go="appointments">+ Neuer Termin</button></div>
+  <div class="stats"><article><span>Termine heute</span><strong id="statAppointments">0</strong></article><article><span>Kunden gespeichert</span><strong id="statCustomers">0</strong></article><article><span>Mitarbeiter</span><strong id="statStaff">0</strong></article></div>
+  <div class="panel"><div class="panelhead"><h2>Heutige Termine</h2><button class="textbtn" data-go="appointments">Alle Termine →</button></div><div id="todayList" class="empty">Noch keine Termine eingetragen.</div></div>
+  <p class="notice">Hinweis: Diese erste Version speichert Daten nur in diesem Browser auf diesem Gerät. Noch keine gemeinsame Cloud-Datenbank.</p>
+</section>
+<section class="page" id="appointments">
+  <div class="heading"><div><p class="eyebrow">PLANUNG</p><h1>Termine</h1><p class="muted">Termine anlegen und verwalten.</p></div></div>
+  <form id="appointmentForm" class="panel formgrid">
+    <label>Kunde<select id="apptCustomer" required><option value="">Kunde auswählen</option></select></label>
+    <label>Leistung<select id="apptService" required><option value="">Leistung auswählen</option></select></label>
+    <label>Datum<input id="apptDate" type="date" required></label>
+    <label>Uhrzeit<input id="apptTime" type="time" required></label>
+    <label>Dauer (Min.)<input id="apptDuration" type="number" min="15" step="15" value="90" required></label>
+    <label>Mitarbeiter<select id="apptStaff"><option value="">Nicht zugewiesen</option></select></label>
+    <label class="wide">Notiz<input id="apptNote" placeholder="Optionale interne Notiz"></label>
+    <button class="primary wide" type="submit">Termin speichern</button>
+  </form>
+  <div class="panel"><div class="panelhead"><h2>Alle Termine</h2></div><div id="appointmentList" class="tablewrap"></div></div>
+</section>
+<section class="page" id="customers">
+  <div class="heading"><div><p class="eyebrow">KUNDENVERWALTUNG</p><h1>Kundenkartei</h1><p class="muted">Kontaktdaten, Haarhistorie und Farbformeln.</p></div></div>
+  <form id="customerForm" class="panel formgrid">
+    <label>Name<input id="customerName" required placeholder="Vor- und Nachname"></label>
+    <label>Telefon<input id="customerPhone" type="tel" placeholder="+49 ..."></label>
+    <label class="wide">Haar- und Kundenhinweise<textarea id="customerNotes" rows="2" placeholder="Haartyp, Wünsche, Besonderheiten ..."></textarea></label>
+    <label class="wide">Farbformel / letzte Behandlung<textarea id="customerFormula" rows="2" placeholder="Marke, Farbnummer, Mischverhältnis, Entwickler, Einwirkzeit ..."></textarea></label>
+    <button class="primary wide" type="submit">Kundenkarte speichern</button>
+  </form>
+  <div class="panel"><div class="panelhead"><h2>Gespeicherte Kunden</h2><input id="customerSearch" class="search" placeholder="Kunden suchen …"></div><div id="customerList" class="tablewrap"></div></div>
+</section>
+<section class="page" id="services">
+  <div class="heading"><div><p class="eyebrow">SALONANGEBOT</p><h1>Leistungen & Preise</h1><p class="muted">Die CutStyle-Preisliste vom 26.10.2026 ist bereits eingetragen. Weitere Leistungen kannst du ergänzen.</p></div></div>
+  <form id="serviceForm" class="panel formgrid">
+    <label>Kategorie<select id="serviceCategory"><option>Damen</option><option>Herren</option><option>Kosmetik</option></select></label>
+    <label>Leistung<input id="serviceName" required placeholder="Leistungsname"></label>
+    <label>Preis Kurz / Standard<input id="serviceShort" placeholder="z. B. ab 99 €"></label>
+    <label>Preis Lang (optional)<input id="serviceLong" placeholder="z. B. ab 120 €"></label>
+    <button class="primary wide">Leistung hinzufügen</button>
+  </form>
+  <div class="panel"><div id="serviceList" class="tablewrap"></div></div>
+</section>
+<section class="page" id="staff">
+  <div class="heading"><div><p class="eyebrow">TEAM</p><h1>Mitarbeiter</h1><p class="muted">Teamübersicht für die Terminplanung.</p></div></div>
+  <form id="staffForm" class="panel formgrid"><label class="wide">Name<input id="staffName" required placeholder="Mitarbeitername"></label><button class="primary wide">Mitarbeiter hinzufügen</button></form>
+  <div class="panel"><div id="staffList" class="tablewrap"></div></div>
+</section>
+</main></div>
+<script src="app.js"></script>
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js").catch(err => console.warn("Service Worker:", err)));
+}
+</script>
+</body></html>
