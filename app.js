@@ -66,6 +66,16 @@ async function loadCloudData(){
 $('customerForm').onsubmit=async e=>{e.preventDefault();const full=$('customerName').value.trim().split(/\s+/);const first=full.shift()||'';const last=full.join(' ');const row={first_name:first,last_name:last||null,phone:$('customerPhone').value.trim()||null,hair_notes:$('customerNotes').value.trim()||null,color_formula:$('customerFormula').value.trim()||null};const {error}=await supabase.from('customers').insert(row);if(error){showMessage('Kunde konnte nicht gespeichert werden: '+error.message,true);return;}e.target.reset();await loadCloudData();};
 let creatingNewCustomer = false;
 let selectedCustomerId = '';
+function updateCustomerSuggestions(){
+  const input=$('apptCustomer');
+  const typed=input.value.trim();
+  const box=$('customerSuggestions');
+  if(!typed){box.innerHTML='';box.hidden=true;return;}
+  const matches=customers.filter(c=>c.name.toLocaleLowerCase('de-DE').includes(typed.toLocaleLowerCase('de-DE'))).slice(0,8);
+  box.innerHTML=matches.map(c=>`<button type="button" class="customer-suggestion" data-customer-id="${esc(c.id)}" data-customer-name="${esc(c.name)}">${esc(c.name)}${c.phone?` <small>${esc(c.phone)}</small>`:''}</button>`).join('');
+  box.hidden=matches.length===0;
+}
+$('apptCustomer').addEventListener('focus',()=>{ $('customerSuggestions').hidden=true; });
 $('apptCustomer').addEventListener('input',()=>{
   const typed=$('apptCustomer').value.trim();
   const match=customers.find(c=>c.name.toLocaleLowerCase('de-DE')===typed.toLocaleLowerCase('de-DE'));
@@ -73,7 +83,20 @@ $('apptCustomer').addEventListener('input',()=>{
   creatingNewCustomer=!!typed&&!match;
   $('inlineNewCustomer').hidden=!creatingNewCustomer;
   if(!creatingNewCustomer){$('newCustomerPhone').value='';$('newCustomerNotes').value='';$('newCustomerFormula').value='';}
+  updateCustomerSuggestions();
 });
+$('customerSuggestions').addEventListener('mousedown',e=>{
+  const item=e.target.closest('.customer-suggestion');
+  if(!item)return;
+  e.preventDefault();
+  $('apptCustomer').value=item.dataset.customerName;
+  selectedCustomerId=String(item.dataset.customerId);
+  creatingNewCustomer=false;
+  $('inlineNewCustomer').hidden=true;
+  $('customerSuggestions').hidden=true;
+  $('newCustomerPhone').value='';$('newCustomerNotes').value='';$('newCustomerFormula').value='';
+});
+document.addEventListener('click',e=>{if(!e.target.closest('.field-block'))$('customerSuggestions').hidden=true;});
 $('appointmentForm').onsubmit=async e=>{
   e.preventDefault();
   const service=services.find(s=>String(s.id)===$('apptService').value);
@@ -109,7 +132,6 @@ $('customerSearch').oninput=render;
 window.del=async(table,id)=>{if(!confirm('Diesen Eintrag wirklich löschen?'))return;const {error}=await supabase.from(table).delete().eq('id',id);if(error){showMessage('Löschen fehlgeschlagen: '+error.message,true);return;}await loadCloudData();};
 function render(){
  $('statAppointments').textContent=appointments.filter(a=>a.date===today).length;$('statCustomers').textContent=customers.length;$('statStaff').textContent=staff.length;
- $('customerOptions').innerHTML=customers.map(c=>`<option value="${esc(c.name)}"></option>`).join('');
  $('apptService').innerHTML='<option value="">Leistung auswählen</option>'+services.map(s=>`<option value="${s.id}">${esc(s.category)} · ${esc(s.name)} (${esc(s.short||s.long||'Preis auf Anfrage')})</option>`).join('');
  $('apptStaff').innerHTML='<option value="">Mitarbeiter auswählen</option>'+staff.map(s=>`<option value="${s.id}">${esc(s.name)}</option>`).join('');
  const ap=appointments.slice().sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time));

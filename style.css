@@ -16,3 +16,12 @@
 .inline-customer-title{grid-column:1/-1;display:flex;flex-direction:column;gap:4px;margin-bottom:2px}
 .inline-customer-panel .wide{grid-column:1/-1}
 @media(max-width:700px){.inline-customer-panel{grid-template-columns:1fr}.inline-customer-panel .wide{grid-column:1}}
+
+
+/* Kunden-Suche: Vorschläge erscheinen erst nach Texteingabe */
+.field-block{position:relative}
+.customer-suggestions{position:absolute;top:100%;left:0;right:0;z-index:50;background:#fffefa;border:1px solid #d9d1c3;border-radius:0 0 7px 7px;box-shadow:0 8px 18px #211e1918;max-height:240px;overflow:auto}
+.customer-suggestions[hidden]{display:none!important}
+.customer-suggestion{display:block;width:100%;padding:10px 12px;text-align:left;border:0;border-bottom:1px solid #eee8df;background:#fffefa;color:#211e19;font:14px 'DM Sans',sans-serif;cursor:pointer}
+.customer-suggestion:hover{background:#f4f1eb}
+.customer-suggestion small{color:#827b70;margin-left:8px}

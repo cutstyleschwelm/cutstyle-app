@@ -1,4 +1,4 @@
-const CACHE_NAME = "cutstyle-v12-kunde-textfeld";
+const CACHE_NAME = "cutstyle-v13-kunde-autocomplete";
 const FILES = [
   "./",
   "./index.html",
