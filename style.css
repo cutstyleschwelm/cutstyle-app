@@ -10,12 +10,9 @@
 .field-block{display:flex;flex-direction:column;gap:8px;min-width:0}.field-inline{display:flex;gap:8px;align-items:center}.field-inline select{flex:1;min-width:0}.field-inline .textbtn{white-space:nowrap}.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;padding:18px;z-index:1000}.modal-backdrop[hidden]{display:none!important}.modal-card{background:#fff;border-radius:16px;padding:22px;width:min(560px,100%);max-height:90vh;overflow:auto;box-shadow:0 20px 60px rgba(0,0,0,.25)}.modal-card .panelhead{margin-bottom:16px}.modal-card .formgrid{padding:0;box-shadow:none}@media(max-width:650px){.field-inline{align-items:stretch;flex-direction:column}.field-inline .textbtn{width:100%}.modal-card{padding:16px}}
 
 /* Kundenaktion direkt in der Kopfzeile des Kunde-Feldes */
-.customer-field-heading{display:flex;align-items:center;justify-content:space-between;gap:10px}.customer-field-heading label{margin:0}.customer-add-btn{font-weight:600;padding:3px 0}
 
 .inline-customer-panel{grid-column:1/-1;border:1px solid #d8d3c5;background:#faf9f4;border-radius:12px;padding:16px;display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:4px}
 .inline-customer-panel[hidden]{display:none}
 .inline-customer-title{grid-column:1/-1;display:flex;flex-direction:column;gap:4px;margin-bottom:2px}
 .inline-customer-panel .wide{grid-column:1/-1}
-.customer-field-heading{display:flex;align-items:center;justify-content:space-between;gap:12px}
-.customer-add-btn{white-space:nowrap}
 @media(max-width:700px){.inline-customer-panel{grid-template-columns:1fr}.inline-customer-panel .wide{grid-column:1}}

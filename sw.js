@@ -1,4 +1,4 @@
-const CACHE_NAME = "cutstyle-v10-inline-newcustomer";
+const CACHE_NAME = "cutstyle-v11-kunde-dropdown";
 const FILES = [
   "./",
   "./index.html",

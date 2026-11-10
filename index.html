@@ -18,9 +18,9 @@
 <div class="stats"><article><span>Termine heute</span><strong id="statAppointments">0</strong></article><article><span>Kunden gespeichert</span><strong id="statCustomers">0</strong></article><article><span>Mitarbeiter</span><strong id="statStaff">0</strong></article></div>
 <div class="panel"><div class="panelhead"><h2>Heutige Termine</h2><button class="textbtn" data-go="appointments">Alle Termine →</button></div><div id="todayList" class="empty">Noch keine Termine eingetragen.</div></div><p class="notice">Alle Daten sind mit der CutStyle-Cloud synchronisiert.</p></section>
 <section class="page" id="appointments"><div class="heading"><div><p class="eyebrow">PLANUNG</p><h1>Termine</h1><p class="muted">Termine anlegen und verwalten.</p></div><button id="refreshDataBtn" class="textbtn" type="button">Daten neu laden</button></div>
-<form id="appointmentForm" class="panel formgrid"><div class="field-block"><div class="customer-field-heading"><label for="apptCustomer">Kunde</label><button type="button" class="textbtn customer-add-btn" id="openQuickCustomer">+ Neuen Kunden anlegen</button></div><select id="apptCustomer" required><option value="">Kunde auswählen</option></select>
+<form id="appointmentForm" class="panel formgrid"><div class="field-block"><label for="apptCustomer">Kunde</label><select id="apptCustomer" required><option value="">Kunde auswählen</option><option value="__new__">＋ Neu</option></select>
 <div id="inlineNewCustomer" class="inline-customer-panel" hidden>
-  <div class="inline-customer-title"><strong>Neuen Kunden und ersten Termin anlegen</strong><span class="muted">Alle Angaben auf einer Seite</span></div>
+  <div class="inline-customer-title"><strong>Kundendaten</strong><span class="muted">Kunden- und Termininformationen auf einer Seite</span></div>
   <label class="wide">Vor- und Nachname<input id="newCustomerName" autocomplete="name" placeholder="Vor- und Nachname"></label>
   <label class="wide">Telefonnummer<input id="newCustomerPhone" type="tel" autocomplete="tel" placeholder="+49 ..."></label>
   <label class="wide">Haarstruktur / aktuelle Haarfarbe / Kundenwünsche<textarea id="newCustomerNotes" rows="2" placeholder="Was möchte der Kunde machen lassen? Haarstruktur, Ausgangsfarbe, Wünsche ..."></textarea></label>

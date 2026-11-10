@@ -65,14 +65,11 @@ async function loadCloudData(){
 
 $('customerForm').onsubmit=async e=>{e.preventDefault();const full=$('customerName').value.trim().split(/\s+/);const first=full.shift()||'';const last=full.join(' ');const row={first_name:first,last_name:last||null,phone:$('customerPhone').value.trim()||null,hair_notes:$('customerNotes').value.trim()||null,color_formula:$('customerFormula').value.trim()||null};const {error}=await supabase.from('customers').insert(row);if(error){showMessage('Kunde konnte nicht gespeichert werden: '+error.message,true);return;}e.target.reset();await loadCloudData();};
 let creatingNewCustomer = false;
-$('openQuickCustomer').onclick=()=>{
-  creatingNewCustomer=!creatingNewCustomer;
+$('apptCustomer').onchange=()=>{
+  creatingNewCustomer=$('apptCustomer').value==='__new__';
   $('inlineNewCustomer').hidden=!creatingNewCustomer;
-  $('apptCustomer').disabled=creatingNewCustomer;
-  $('apptCustomer').required=!creatingNewCustomer;
   $('newCustomerName').required=creatingNewCustomer;
-  $('openQuickCustomer').textContent=creatingNewCustomer?'− Vorhandenen Kunden auswählen':'+ Neuen Kunden anlegen';
-  if(creatingNewCustomer){$('apptCustomer').value='';$('newCustomerName').focus();}
+  if(creatingNewCustomer){$('newCustomerName').focus();}
   else {$('newCustomerName').value='';$('newCustomerPhone').value='';$('newCustomerNotes').value='';$('newCustomerFormula').value='';}
 };
 $('appointmentForm').onsubmit=async e=>{
@@ -87,7 +84,7 @@ $('appointmentForm').onsubmit=async e=>{
   const end=new Date(start.getTime()+Number($('apptDuration').value||90)*60000);
   const conflict=appointments.find(a=>String(a.staff_id)===String(staffId)&&new Date(a.start_at)<end&&new Date(a.end_at)>start&&a.status!=='cancelled');
   if(conflict){const who=customers.find(c=>String(c.id)===String(conflict.customer_id));showMessage(`Zeitkonflikt: Dieser Mitarbeiter hat bereits um ${new Date(conflict.start_at).toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'})} einen Termin${who?' mit '+who.name:''}. Bitte eine andere Zeit oder einen anderen Mitarbeiter wählen.`,true);return;}
-  let customerId=$('apptCustomer').value;
+  let customerId=creatingNewCustomer?'':$('apptCustomer').value;
   if(creatingNewCustomer){
     const full=$('newCustomerName').value.trim().split(/\\s+/);
     const first=full.shift()||'',last=full.join(' ');
@@ -97,11 +94,11 @@ $('appointmentForm').onsubmit=async e=>{
     if(error){showMessage('Kunde konnte nicht gespeichert werden: '+error.message,true);return;}
     customerId=data.id;
   }
-  if(!customerId){showMessage('Bitte einen Kunden auswählen oder neu anlegen.',true);return;}
+  if(!customerId){showMessage('Bitte einen Kunden auswählen oder im Feld „Kunde“ die Option „＋ Neu“ wählen.',true);return;}
   const row={customer_id:customerId,staff_id:staffId,service_id:service.id,service_name:service.name,price:service.price_from??null,start_at:start.toISOString(),end_at:end.toISOString(),status:'booked',notes:$('apptNote').value.trim()||null};
   const {error}=await supabase.from('appointments').insert(row);
   if(error){showMessage((creatingNewCustomer?'Der Kunde wurde bereits gespeichert, aber der Termin konnte nicht gespeichert werden: ':'Termin konnte nicht gespeichert werden: ')+error.message,true);return;}
-  e.target.reset();creatingNewCustomer=false;$('inlineNewCustomer').hidden=true;$('apptCustomer').disabled=false;$('apptCustomer').required=true;$('newCustomerName').required=false;$('openQuickCustomer').textContent='+ Neuen Kunden anlegen';$('apptDate').value=today;$('apptDuration').value=90;
+  e.target.reset();creatingNewCustomer=false;$('inlineNewCustomer').hidden=true;$('newCustomerName').required=false;$('apptDate').value=today;$('apptDuration').value=90;
   await loadCloudData();showMessage('Kunde und Termin wurden erfolgreich gespeichert.');
 };
 $('serviceForm').onsubmit=async e=>{e.preventDefault();const {error}=await supabase.from('services').insert({category:$('serviceCategory').value,name:$('serviceName').value.trim(),price_note:$('serviceShort').value.trim()||null,price_to:null,active:true});if(error){showMessage('Leistung konnte nicht gespeichert werden: '+error.message,true);return;}e.target.reset();await loadCloudData();};
@@ -110,7 +107,7 @@ $('customerSearch').oninput=render;
 window.del=async(table,id)=>{if(!confirm('Diesen Eintrag wirklich löschen?'))return;const {error}=await supabase.from(table).delete().eq('id',id);if(error){showMessage('Löschen fehlgeschlagen: '+error.message,true);return;}await loadCloudData();};
 function render(){
  $('statAppointments').textContent=appointments.filter(a=>a.date===today).length;$('statCustomers').textContent=customers.length;$('statStaff').textContent=staff.length;
- $('apptCustomer').innerHTML='<option value="">Kunde auswählen</option>'+customers.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join('');
+ $('apptCustomer').innerHTML='<option value="">Kunde auswählen</option>'+customers.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join('')+'<option value="__new__">＋ Neu</option>';
  $('apptService').innerHTML='<option value="">Leistung auswählen</option>'+services.map(s=>`<option value="${s.id}">${esc(s.category)} · ${esc(s.name)} (${esc(s.short||s.long||'Preis auf Anfrage')})</option>`).join('');
  $('apptStaff').innerHTML='<option value="">Mitarbeiter auswählen</option>'+staff.map(s=>`<option value="${s.id}">${esc(s.name)}</option>`).join('');
  const ap=appointments.slice().sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time));
