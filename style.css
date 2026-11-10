@@ -35,3 +35,19 @@
 .picker-field small{font-size:11px;font-weight:400;color:#827b70;margin-top:-3px}
 @media(max-width:760px){.formgrid .picker-field input[type="date"],.formgrid .picker-field input[type="time"]{min-height:68px;font-size:20px;padding:14px 15px;border-radius:13px}.picker-label{font-size:15px}.picker-icon{width:34px;height:34px;font-size:23px}.picker-field small{font-size:12px}}
 @media(pointer:coarse){.formgrid .picker-field input[type="date"],.formgrid .picker-field input[type="time"]{min-height:68px}}
+
+/* CutStyle V16 – runde, gut antippbare Uhrzeit-Auswahl */
+.time-picker-field{position:relative;min-width:0}
+.visually-hidden-time{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}
+.time-picker-toggle{width:100%;min-height:64px;padding:14px 18px;border:1.5px solid #d9cfbf;border-radius:15px;background:#fffefa;color:#211e19;display:flex;align-items:center;justify-content:space-between;font:600 21px 'DM Sans',sans-serif;text-align:left;cursor:pointer;touch-action:manipulation}
+.time-picker-toggle:focus-visible{outline:3px solid #b9965b55;border-color:#b9965b}
+.time-picker-chevron{font-size:25px;color:#987344}
+.time-picker-panel{position:relative;background:#fffefa;border:1px solid #e2d8c8;border-radius:18px;padding:16px;box-shadow:0 8px 22px #211e1918;z-index:20}
+.time-picker-panel[hidden]{display:none!important}
+.time-picker-heading{font-size:13px;font-weight:700;color:#62594d;margin:0 0 13px}
+.time-slots{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:11px;max-height:300px;overflow-y:auto;padding:3px;overscroll-behavior:contain}
+.time-slot{min-height:56px;border:1.5px solid #e4dacb;border-radius:999px;background:#fff;color:#302a22;font:700 17px 'DM Sans',sans-serif;cursor:pointer;touch-action:manipulation;transition:background .12s,border-color .12s,transform .12s}
+.time-slot:active{transform:scale(.97)}
+.time-slot.selected{background:#987344;color:#fff;border-color:#987344;box-shadow:0 3px 9px #98734435}
+@media(max-width:760px){.time-picker-toggle{min-height:70px;font-size:22px}.time-picker-panel{padding:13px}.time-slots{grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;max-height:320px}.time-slot{min-height:60px;font-size:17px}}
+@media(min-width:761px){.time-slots{grid-template-columns:repeat(4,minmax(0,1fr))}}

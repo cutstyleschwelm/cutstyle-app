@@ -15,6 +15,26 @@ const DEFAULT_SERVICES = [
 const today = new Date().toLocaleDateString('en-CA');
 $('today').textContent = new Date().toLocaleDateString('de-DE',{weekday:'long',day:'2-digit',month:'long',year:'numeric'});
 $('apptDate').value = today;
+// Einfache, fingerfreundliche Uhrzeitauswahl in 15-Minuten-Schritten
+const timeSlots = $('timeSlots');
+for(let h=8;h<=19;h++){
+  for(let m of [0,15,30,45]){
+    const value=String(h).padStart(2,'0')+':'+String(m).padStart(2,'0');
+    const b=document.createElement('button');b.type='button';b.className='time-slot';b.textContent=value;b.dataset.time=value;
+    b.addEventListener('click',()=>{
+      $('apptTime').value=value;$('timePickerValue').textContent=value;
+      document.querySelectorAll('.time-slot').forEach(x=>x.classList.toggle('selected',x.dataset.time===value));
+      $('timePickerPanel').hidden=true;$('timePickerToggle').setAttribute('aria-expanded','false');
+    });
+    timeSlots.appendChild(b);
+  }
+}
+$('timePickerToggle').addEventListener('click',()=>{
+  const panel=$('timePickerPanel');panel.hidden=!panel.hidden;
+  $('timePickerToggle').setAttribute('aria-expanded',String(!panel.hidden));
+  if(!panel.hidden){const current=$('apptTime').value;document.querySelectorAll('.time-slot').forEach(x=>x.classList.toggle('selected',x.dataset.time===current));}
+});
+
 const esc = s => String(s ?? '').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function showMessage(message, bad=false){ const el=$('appMessage'); el.textContent=message; el.className=bad?'message error':'message'; }
 function page(p){document.querySelectorAll('.page').forEach(x=>x.classList.toggle('show',x.id===p));document.querySelectorAll('.nav').forEach(x=>x.classList.toggle('active',x.dataset.page===p));}

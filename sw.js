@@ -1,4 +1,4 @@
-const CACHE_NAME = "cutstyle-v14-touch-date-time";
+const CACHE_NAME = "cutstyle-v16-round-time-picker";
 const FILES = [
   "./",
   "./index.html",
