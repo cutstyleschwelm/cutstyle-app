@@ -1,4 +1,4 @@
-const CACHE_NAME = "cutstyle-v3-calendar";
+const CACHE_NAME = "cutstyle-v4-quick-customer";
 const FILES = [
   "./",
   "./index.html",
