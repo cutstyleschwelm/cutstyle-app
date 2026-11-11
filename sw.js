@@ -1,4 +1,4 @@
-const CACHE_NAME = "cutstyle-v18-appointment-cancellation";
+const CACHE_NAME = "cutstyle-v19-customer-email";
 const FILES = [
   "./",
   "./index.html",

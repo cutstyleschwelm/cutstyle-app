@@ -70,7 +70,7 @@ async function loadCloudData(){
   ]);
   const err=results.find(r=>r.error)?.error;
   if(err){showMessage('Daten konnten nicht geladen werden: '+err.message,true);return;}
-  customers=results[0].data.map(c=>({...c,name:[c.first_name,c.last_name].filter(Boolean).join(' '),phone:c.phone||'',notes:c.hair_notes||c.general_notes||'',formula:c.color_formula||''}));
+  customers=results[0].data.map(c=>({...c,name:[c.first_name,c.last_name].filter(Boolean).join(' '),phone:c.phone||'',email:c.email||'',notes:c.hair_notes||c.general_notes||'',formula:c.color_formula||''}));
   appointments=results[1].data.map(a=>{const d=new Date(a.start_at);return {...a,date:d.toLocaleDateString('en-CA'),time:d.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'}),customerId:a.customer_id,staffId:a.staff_id,service:a.service_name||'',price:a.price==null?'':String(a.price)+' €',duration:a.end_at?Math.round((new Date(a.end_at)-d)/60000):90,note:a.notes||''};});
   services=results[2].data.map(s=>({...s,short:s.price_note||(s.price_from!=null?`${s.price_from} €`:''),long:s.price_to!=null?`${s.price_to} €`:''}));
   staff=results[3].data;
@@ -84,7 +84,7 @@ async function loadCloudData(){
   render();showMessage('Alle Daten sind mit der CutStyle-Cloud synchronisiert.');
 }
 
-$('customerForm').onsubmit=async e=>{e.preventDefault();const full=$('customerName').value.trim().split(/\s+/);const first=full.shift()||'';const last=full.join(' ');const row={first_name:first,last_name:last||null,phone:$('customerPhone').value.trim()||null,hair_notes:$('customerNotes').value.trim()||null,color_formula:$('customerFormula').value.trim()||null};const {error}=await supabase.from('customers').insert(row);if(error){showMessage('Kunde konnte nicht gespeichert werden: '+error.message,true);return;}e.target.reset();await loadCloudData();};
+$('customerForm').onsubmit=async e=>{e.preventDefault();const full=$('customerName').value.trim().split(/\s+/);const first=full.shift()||'';const last=full.join(' ');const row={first_name:first,last_name:last||null,phone:$('customerPhone').value.trim()||null,email:$('customerEmail').value.trim()||null,hair_notes:$('customerNotes').value.trim()||null,color_formula:$('customerFormula').value.trim()||null};const {error}=await supabase.from('customers').insert(row);if(error){showMessage('Kunde konnte nicht gespeichert werden: '+error.message,true);return;}e.target.reset();await loadCloudData();};
 let creatingNewCustomer = false;
 let selectedCustomerId = '';
 function updateCustomerSuggestions(){
@@ -103,7 +103,7 @@ $('apptCustomer').addEventListener('input',()=>{
   selectedCustomerId=match?String(match.id):'';
   creatingNewCustomer=!!typed&&!match;
   $('inlineNewCustomer').hidden=!creatingNewCustomer;
-  if(!creatingNewCustomer){$('newCustomerPhone').value='';$('newCustomerNotes').value='';$('newCustomerFormula').value='';}
+  if(!creatingNewCustomer){$('newCustomerPhone').value='';$('newCustomerEmail').value='';$('newCustomerNotes').value='';$('newCustomerFormula').value='';}
   updateCustomerSuggestions();
 });
 $('customerSuggestions').addEventListener('mousedown',e=>{
@@ -115,7 +115,7 @@ $('customerSuggestions').addEventListener('mousedown',e=>{
   creatingNewCustomer=false;
   $('inlineNewCustomer').hidden=true;
   $('customerSuggestions').hidden=true;
-  $('newCustomerPhone').value='';$('newCustomerNotes').value='';$('newCustomerFormula').value='';
+  $('newCustomerPhone').value='';$('newCustomerEmail').value='';$('newCustomerNotes').value='';$('newCustomerFormula').value='';
 });
 document.addEventListener('click',e=>{if(!e.target.closest('.field-block'))$('customerSuggestions').hidden=true;});
 $('appointmentForm').onsubmit=async e=>{
@@ -135,7 +135,7 @@ $('appointmentForm').onsubmit=async e=>{
     const full=$('apptCustomer').value.trim().split(/\s+/);
     const first=full.shift()||'',last=full.join(' ');
     if(!first){showMessage('Bitte den Kundennamen eingeben.',true);$('apptCustomer').focus();return;}
-    const customerRow={first_name:first,last_name:last||null,phone:$('newCustomerPhone').value.trim()||null,hair_notes:$('newCustomerNotes').value.trim()||null,color_formula:$('newCustomerFormula').value.trim()||null};
+    const customerRow={first_name:first,last_name:last||null,phone:$('newCustomerPhone').value.trim()||null,email:$('newCustomerEmail').value.trim()||null,hair_notes:$('newCustomerNotes').value.trim()||null,color_formula:$('newCustomerFormula').value.trim()||null};
     const {data,error}=await supabase.from('customers').insert(customerRow).select('id').single();
     if(error){showMessage('Kunde konnte nicht gespeichert werden: '+error.message,true);return;}
     customerId=data.id;
@@ -178,8 +178,8 @@ function render(){
  $('appointmentList').innerHTML=ap.length?`<table><thead><tr><th>Datum / Zeit</th><th>Kunde</th><th>Leistung</th><th>Dauer</th><th>Mitarbeiter</th><th>Status / Aktion</th></tr></thead><tbody>${rows}</tbody></table>`:'<div class="empty">Noch keine Termine vorhanden.</div>';
  renderCalendar();
  $('todayList').innerHTML=ap.filter(a=>a.date===today&&a.status!=='cancelled').map(a=>{const c=customers.find(x=>String(x.id)===String(a.customer_id));return `<div class="apptrow">${esc(a.time)} · <b>${esc(c?.name||'Kunde')}</b> · ${esc(a.service)}</div>`}).join('')||'<div class="empty">Für heute sind noch keine Termine eingetragen.</div>';
- const q=($('customerSearch').value||'').toLowerCase();const filtered=customers.filter(c=>(c.name+' '+c.phone).toLowerCase().includes(q));
- $('customerList').innerHTML=filtered.length?`<table><thead><tr><th>Name / Telefon</th><th>Hinweise</th><th>Farbformel</th><th></th></tr></thead><tbody>${filtered.map(c=>`<tr><td><b>${esc(c.name)}</b><br>${esc(c.phone)}</td><td>${esc(c.notes)}</td><td>${esc(c.formula)}</td><td><button class="smallbtn" onclick="del('customers','${c.id}')">Löschen</button></td></tr>`).join('')}</tbody></table>`:'<div class="empty">Noch keine Kunden gespeichert.</div>';
+ const q=($('customerSearch').value||'').toLowerCase();const filtered=customers.filter(c=>(c.name+' '+c.phone+' '+c.email).toLowerCase().includes(q));
+ $('customerList').innerHTML=filtered.length?`<table><thead><tr><th>Name / Kontakt</th><th>Hinweise</th><th>Farbformel</th><th></th></tr></thead><tbody>${filtered.map(c=>`<tr><td><b>${esc(c.name)}</b><br>${esc(c.phone)}${c.email?`<br>${esc(c.email)}`:''}</td><td>${esc(c.notes)}</td><td>${esc(c.formula)}</td><td><button class="smallbtn" onclick="del('customers','${c.id}')">Löschen</button></td></tr>`).join('')}</tbody></table>`:'<div class="empty">Noch keine Kunden gespeichert.</div>';
  $('serviceList').innerHTML=services.length?`<table><thead><tr><th>Leistung</th><th>Preis / Standard</th><th></th></tr></thead><tbody>${services.map(s=>`<tr><td><small>${esc(s.category||'')}</small><br>${esc(s.name)}</td><td>${esc(s.short||s.long||'–')}</td><td><button class="smallbtn" onclick="del('services','${s.id}')">Löschen</button></td></tr>`).join('')}</tbody></table>`:'<div class="empty">Noch keine Leistungen eingetragen.</div>';
  $('staffList').innerHTML=staff.length?`<table><thead><tr><th>Mitarbeiter</th><th></th></tr></thead><tbody>${staff.map(s=>`<tr><td>${esc(s.name)}</td><td><button class="smallbtn" onclick="del('staff','${s.id}')">Löschen</button></td></tr>`).join('')}</tbody></table>`:'<div class="empty">Noch keine Mitarbeiter eingetragen.</div>';
 }
