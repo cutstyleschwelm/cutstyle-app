@@ -61,3 +61,22 @@
 .dangerbtn{border-color:#e0c1bd;color:#a12c24}
 .cancelled-row{opacity:.72;background:#faf8f6}
 @media(max-width:760px){.appointment-actions{min-width:150px}.appointment-actions .smallbtn{min-height:40px;padding:8px 10px}}
+/* CutStyle V20 – ruhige, hochwertige Bedienoberfläche */
+:root{--bg:#f5f2ec;--paper:#fffefa;--ink:#211e19;--muted:#81796e;--gold:#b9965b;--line:#e8e1d5;--dark:#191713;--soft:#f7f4ee}
+body{background:linear-gradient(135deg,#f6f3ed 0%,#efebe3 100%);min-height:100vh}
+.top{position:sticky;top:0;z-index:100;box-shadow:0 4px 20px #17151218;background:rgba(25,23,19,.97);backdrop-filter:blur(12px)}
+.brand .mark{border-radius:10px;background:linear-gradient(145deg,#29251e,#171512);box-shadow:inset 0 0 0 1px #b9965b22}
+.sidebar{position:sticky;top:76px;height:calc(100vh - 76px);align-self:flex-start;box-shadow:8px 0 24px #17151208}
+.nav{transition:background .18s ease,color .18s ease,transform .18s ease}.nav:hover{transform:translateX(2px)}
+.nav.active{background:linear-gradient(90deg,#514432,#393329);border-left:3px solid #d0ae76}
+main{max-width:1600px;padding:40px clamp(18px,3vw,48px)}
+.heading{margin-bottom:30px}.eyebrow{letter-spacing:2.4px}h1{font-size:clamp(30px,3vw,39px);letter-spacing:-.5px}h2{font-size:21px}
+.primary{border-radius:9px;padding:13px 19px;box-shadow:0 5px 14px #19171318;transition:transform .15s ease,box-shadow .15s ease,background .15s ease}.primary:hover{transform:translateY(-1px);box-shadow:0 8px 18px #19171324}
+.stats{gap:18px}.stats article,.panel{border-radius:14px;box-shadow:0 5px 22px #29231908;transition:box-shadow .2s ease,border-color .2s ease}.stats article{position:relative;overflow:hidden;min-height:112px}.stats article:after{content:"";position:absolute;right:-22px;top:-30px;width:100px;height:100px;border:1px solid #b9965b25;border-radius:50%;box-shadow:0 0 0 13px #b9965b08,0 0 0 27px #b9965b05}.stats strong{font-size:35px;color:#30291f}.panel{padding:24px}.panelhead{gap:14px}.formgrid{gap:18px}.formgrid label,.login-card label{font-size:13px}.formgrid input,.formgrid select,.formgrid textarea,.search,.login-card input{border-radius:9px;border-color:#e2dbcf;padding:12px 13px;transition:border-color .15s ease,box-shadow .15s ease}.formgrid input:focus,.formgrid select:focus,.formgrid textarea:focus,.search:focus,.login-card input:focus{outline:none;border-color:#b9965b;box-shadow:0 0 0 3px #b9965b20}
+.textbtn{font-weight:600;padding:8px 10px;border-radius:7px}.textbtn:hover{background:#f2ede4}
+.tablewrap table{min-width:680px}th{letter-spacing:.35px;text-transform:uppercase}tbody tr:hover{background:#faf8f3}td{line-height:1.5}.smallbtn{border-radius:7px;padding:7px 10px;transition:background .15s ease,border-color .15s ease}.smallbtn:hover{background:#f5f0e7;border-color:#cbb68f}
+.calendar-panel{padding:24px}.calendar-day{background:#fffefa;border-radius:12px}.calendar-day-head{background:#f5f1e9;padding:13px 16px}.calendar-event{padding:13px 16px;min-height:54px}.calendar-event strong{font-variant-numeric:tabular-nums}.calendar-event:hover{background:#fcfaf6}.calendar-empty{padding:18px 16px}.view-switch{border:1px solid #e8e1d5;background:#f7f4ee}.view-switch button{font-weight:600}.view-switch button.active{color:#76572c;box-shadow:0 2px 8px #211e1914}
+.apptrow{padding:12px 14px;border:1px solid var(--line);border-radius:9px;margin:8px 0;background:#fffefa}.notice{border-radius:9px}
+.login-card{box-shadow:0 18px 55px #211e1918}.login-card .primary{margin-top:4px}
+@media(max-width:760px){.top{height:auto;min-height:70px;padding:12px 14px}.topright{flex-wrap:wrap;justify-content:flex-end}.shell{min-height:calc(100vh - 70px)}.sidebar{position:sticky;top:70px;z-index:90;box-shadow:0 5px 14px #17151212}.nav{font-size:13px}.nav:hover{transform:none}main{padding:24px 13px}.heading{flex-wrap:wrap}.heading .primary{width:100%}.stats{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.stats article{min-height:92px;padding:12px}.stats article:after{width:60px;height:60px}.stats strong{font-size:26px}.panel{padding:16px}.calendar-panel{padding:16px}.panelhead{align-items:flex-start}.calendar-toolbar{gap:8px;flex-wrap:wrap}.calendar-event{padding:11px 12px}.tablewrap{margin-right:-4px}}
+@media(max-width:420px){.brand b{font-size:19px}.brand small{font-size:8px}.topright{gap:6px}.topright #today{display:none}.stats span{font-size:9px}.stats strong{font-size:23px}.view-switch{width:100%;justify-content:space-between}.view-switch button{flex:1;padding:8px 5px}}

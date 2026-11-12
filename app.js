@@ -49,6 +49,7 @@ $('loginForm').addEventListener('submit', async e=>{
   await startApp();
 });
 $('logoutBtn').onclick=async()=>{await supabase.auth.signOut();location.reload();};
+$('refreshDataBtn').addEventListener('click',()=>loadCloudData());
 
 async function startApp(){
   const {data:{user}}=await supabase.auth.getUser();
