@@ -89,23 +89,26 @@ $('customerForm').onsubmit=async e=>{e.preventDefault();const full=$('customerNa
 let creatingNewCustomer = false;
 let selectedCustomerId = '';
 function updateCustomerSuggestions(){
-  const input=$('apptCustomer');
-  const typed=input.value.trim();
+  const typed=$('apptCustomer').value.trim().toLocaleLowerCase('de-DE');
   const box=$('customerSuggestions');
-  if(!typed){box.innerHTML='';box.hidden=true;return;}
-  const matches=customers.filter(c=>c.name.toLocaleLowerCase('de-DE').includes(typed.toLocaleLowerCase('de-DE'))).slice(0,8);
+  if(!typed){box.innerHTML='';box.hidden=true;return [];}
+  const matches=customers.filter(c=>(c.name||'').toLocaleLowerCase('de-DE').includes(typed)).slice(0,8);
   box.innerHTML=matches.map(c=>`<button type="button" class="customer-suggestion" data-customer-id="${esc(c.id)}" data-customer-name="${esc(c.name)}">${esc(c.name)}${c.phone?` <small>${esc(c.phone)}</small>`:''}</button>`).join('');
   box.hidden=matches.length===0;
+  return matches;
 }
-$('apptCustomer').addEventListener('focus',()=>{ $('customerSuggestions').hidden=true; });
+$('apptCustomer').addEventListener('focus',()=>{
+  if($('apptCustomer').value.trim()) updateCustomerSuggestions();
+});
 $('apptCustomer').addEventListener('input',()=>{
-  const typed=$('apptCustomer').value.trim();
-  const match=customers.find(c=>c.name.toLocaleLowerCase('de-DE')===typed.toLocaleLowerCase('de-DE'));
-  selectedCustomerId=match?String(match.id):'';
-  creatingNewCustomer=!!typed&&!match;
+  const typed=$('apptCustomer').value.trim().toLocaleLowerCase('de-DE');
+  const exact=customers.find(c=>(c.name||'').toLocaleLowerCase('de-DE')===typed);
+  const matches=updateCustomerSuggestions();
+  selectedCustomerId=exact?String(exact.id):'';
+  // Beim Tippen eines vorhandenen Namens zuerst Treffer zeigen; Neuanlage nur, wenn es keinen Treffer gibt.
+  creatingNewCustomer=!!typed&&!exact&&matches.length===0;
   $('inlineNewCustomer').hidden=!creatingNewCustomer;
   if(!creatingNewCustomer){$('newCustomerPhone').value='';$('newCustomerEmail').value='';$('newCustomerNotes').value='';$('newCustomerFormula').value='';}
-  updateCustomerSuggestions();
 });
 $('customerSuggestions').addEventListener('mousedown',e=>{
   const item=e.target.closest('.customer-suggestion');
