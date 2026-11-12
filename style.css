@@ -20,7 +20,7 @@
 
 /* Kunden-Suche: Vorschläge erscheinen erst nach Texteingabe */
 .field-block{position:relative}
-.customer-suggestions{position:absolute;top:68px;left:0;right:0;z-index:50;background:#fffefa;border:1px solid #d9d1c3;border-radius:0 0 7px 7px;box-shadow:0 8px 18px #211e1918;max-height:240px;overflow:auto}
+.customer-suggestions{position:relative;left:auto;right:auto;width:100%;z-index:50;background:#fffefa;border:1px solid #d9d1c3;border-radius:0 0 7px 7px;box-shadow:0 8px 18px #211e1918;max-height:240px;overflow:auto}
 .customer-suggestions[hidden]{display:none!important}
 .customer-suggestion{display:block;width:100%;padding:10px 12px;text-align:left;border:0;border-bottom:1px solid #eee8df;background:#fffefa;color:#211e19;font:14px 'DM Sans',sans-serif;cursor:pointer}
 .customer-suggestion:hover{background:#f4f1eb}

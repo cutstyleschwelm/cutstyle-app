@@ -1,4 +1,4 @@
-const CACHE_NAME = "cutstyle-v21-customer-search-fix";
+const CACHE_NAME = "cutstyle-v22-customer-search-fix";
 const APP_FILES = ["./", "./index.html", "./style.css", "./app.js", "./manifest.webmanifest", "./icon-192.png", "./icon-512.png"];
 
 self.addEventListener("install", event => {

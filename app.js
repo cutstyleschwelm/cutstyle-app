@@ -88,27 +88,44 @@ async function loadCloudData(){
 $('customerForm').onsubmit=async e=>{e.preventDefault();const full=$('customerName').value.trim().split(/\s+/);const first=full.shift()||'';const last=full.join(' ');const row={first_name:first,last_name:last||null,phone:$('customerPhone').value.trim()||null,email:$('customerEmail').value.trim()||null,hair_notes:$('customerNotes').value.trim()||null,color_formula:$('customerFormula').value.trim()||null};const {error}=await supabase.from('customers').insert(row);if(error){showMessage('Kunde konnte nicht gespeichert werden: '+error.message,true);return;}e.target.reset();await loadCloudData();};
 let creatingNewCustomer = false;
 let selectedCustomerId = '';
+function normalizeCustomerText(value){
+  return String(value ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLocaleLowerCase('de-DE').replace(/\s+/g,' ').trim();
+}
+function customerDisplayName(customer){
+  return String(customer.name || [customer.first_name,customer.last_name].filter(Boolean).join(' ') || '').replace(/\s+/g,' ').trim();
+}
 function updateCustomerSuggestions(){
-  const typed=$('apptCustomer').value.trim().toLocaleLowerCase('de-DE');
+  const typed=normalizeCustomerText($('apptCustomer').value);
   const box=$('customerSuggestions');
   if(!typed){box.innerHTML='';box.hidden=true;return [];}
-  const matches=customers.filter(c=>(c.name||'').toLocaleLowerCase('de-DE').includes(typed)).slice(0,8);
-  box.innerHTML=matches.map(c=>`<button type="button" class="customer-suggestion" data-customer-id="${esc(c.id)}" data-customer-name="${esc(c.name)}">${esc(c.name)}${c.phone?` <small>${esc(c.phone)}</small>`:''}</button>`).join('');
+  const matches=customers.filter(c=>{
+    const name=normalizeCustomerText(customerDisplayName(c));
+    const first=normalizeCustomerText(c.first_name);
+    const last=normalizeCustomerText(c.last_name);
+    return name.includes(typed) || first.includes(typed) || last.includes(typed) || normalizeCustomerText(`${first} ${last}`).includes(typed);
+  }).slice(0,8);
+  box.innerHTML=matches.map(c=>{
+    const name=customerDisplayName(c);
+    return `<button type="button" class="customer-suggestion" data-customer-id="${esc(c.id)}" data-customer-name="${esc(name)}">${esc(name)}${c.phone?` <small>${esc(c.phone)}</small>`:''}</button>`;
+  }).join('');
   box.hidden=matches.length===0;
   return matches;
+}
+function clearNewCustomerFields(){
+  $('newCustomerPhone').value='';$('newCustomerEmail').value='';$('newCustomerNotes').value='';$('newCustomerFormula').value='';
 }
 $('apptCustomer').addEventListener('focus',()=>{
   if($('apptCustomer').value.trim()) updateCustomerSuggestions();
 });
 $('apptCustomer').addEventListener('input',()=>{
-  const typed=$('apptCustomer').value.trim().toLocaleLowerCase('de-DE');
-  const exact=customers.find(c=>(c.name||'').toLocaleLowerCase('de-DE')===typed);
+  const typed=normalizeCustomerText($('apptCustomer').value);
   const matches=updateCustomerSuggestions();
+  const exact=customers.find(c=>normalizeCustomerText(customerDisplayName(c))===typed);
   selectedCustomerId=exact?String(exact.id):'';
-  // Beim Tippen eines vorhandenen Namens zuerst Treffer zeigen; Neuanlage nur, wenn es keinen Treffer gibt.
-  creatingNewCustomer=!!typed&&!exact&&matches.length===0;
+  // A partial match is an existing customer candidate, never a new-customer form.
+  creatingNewCustomer=!!typed && matches.length===0 && !exact;
   $('inlineNewCustomer').hidden=!creatingNewCustomer;
-  if(!creatingNewCustomer){$('newCustomerPhone').value='';$('newCustomerEmail').value='';$('newCustomerNotes').value='';$('newCustomerFormula').value='';}
+  if(!creatingNewCustomer) clearNewCustomerFields();
 });
 $('customerSuggestions').addEventListener('mousedown',e=>{
   const item=e.target.closest('.customer-suggestion');
@@ -119,9 +136,11 @@ $('customerSuggestions').addEventListener('mousedown',e=>{
   creatingNewCustomer=false;
   $('inlineNewCustomer').hidden=true;
   $('customerSuggestions').hidden=true;
-  $('newCustomerPhone').value='';$('newCustomerEmail').value='';$('newCustomerNotes').value='';$('newCustomerFormula').value='';
+  clearNewCustomerFields();
 });
-document.addEventListener('click',e=>{if(!e.target.closest('.field-block'))$('customerSuggestions').hidden=true;});
+document.addEventListener('click',e=>{
+  if(!e.target.closest('.field-block')) $('customerSuggestions').hidden=true;
+});
 $('appointmentForm').onsubmit=async e=>{
   e.preventDefault();
   const service=services.find(s=>String(s.id)===$('apptService').value);
