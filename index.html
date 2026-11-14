@@ -1,45 +1,128 @@
 <!doctype html>
-<html lang="de"><head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#171512"><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-192.png">
-<title>CutStyle – Salonverwaltung</title><link rel="stylesheet" href="style.css">
-</head><body>
-<div id="loginScreen" class="login-screen" hidden><form id="loginForm" class="login-card">
-<div class="brand login-brand"><span class="mark">C</span><div><b>CutStyle</b><small>SALONVERWALTUNG</small></div></div>
-<h1>Anmelden</h1><p class="muted">Bitte melde dich mit deinem CutStyle-Konto an.</p>
-<label>E-Mail-Adresse<input id="loginEmail" type="email" autocomplete="username" required placeholder="name@beispiel.de"></label>
-<label>Passwort<input id="loginPassword" type="password" autocomplete="current-password" required placeholder="Passwort"></label>
-<button class="primary" type="submit">Anmelden</button><div id="loginMessage" class="message" role="status"></div></form></div>
-<div id="appShell" hidden><header class="top"><div class="brand"><span class="mark">C</span><div><b>CutStyle</b><small>SALON MANAGEMENT</small></div></div><div class="topright"><span id="today"></span><span id="connectionStatus" class="status">Nicht verbunden</span><button id="logoutBtn" class="logout">Abmelden</button><small id="signedInAs"></small></div></header>
-<div class="shell"><aside class="sidebar">
-<button class="nav active" data-page="dashboard">Übersicht</button><button class="nav" data-page="appointments">Termine</button><button class="nav" data-page="customers">Kundenkartei</button><button class="nav" data-page="services">Leistungen & Preise</button><button class="nav" data-page="staff">Mitarbeiter</button><div class="sidefoot">CUTSTYLE · SCHWELM<br><small>Version 2.0 – CutStyle</small></div>
-</aside><main id="main"><div id="appMessage" class="message" role="status"></div>
-<section class="page show" id="dashboard"><div class="heading"><div><p class="eyebrow">WILLKOMMEN ZURÜCK</p><h1>Übersicht</h1><p class="muted">Dein Salon auf einen Blick.</p></div><button class="primary" data-go="appointments">+ Neuer Termin</button></div>
-<div class="stats"><article><span>Termine heute</span><strong id="statAppointments">0</strong></article><article><span>Kunden gespeichert</span><strong id="statCustomers">0</strong></article><article><span>Mitarbeiter</span><strong id="statStaff">0</strong></article></div>
-<div class="panel"><div class="panelhead"><h2>Heutige Termine</h2><button class="textbtn" data-go="appointments">Alle Termine →</button></div><div id="todayList" class="empty">Noch keine Termine eingetragen.</div></div><p class="notice">Alle Daten sind mit der CutStyle-Cloud synchronisiert.</p></section>
-<section class="page" id="appointments"><div class="heading"><div><p class="eyebrow">PLANUNG</p><h1>Termine</h1><p class="muted">Termine anlegen und verwalten.</p></div><button id="refreshDataBtn" class="textbtn" type="button">Daten neu laden</button></div>
-<form id="appointmentForm" class="panel formgrid"><div class="field-block"><label for="apptCustomer">Kunde</label><input id="apptCustomer" type="text" autocomplete="off" placeholder="Kundennamen eingeben" required><div id="customerSuggestions" class="customer-suggestions" hidden></div>
-<div id="inlineNewCustomer" class="inline-customer-panel" hidden>
-  <div class="inline-customer-title"><strong>Kundendaten</strong><span class="muted">Kunden- und Termininformationen auf einer Seite</span></div>
-  <label class="wide">Telefonnummer<input id="newCustomerPhone" type="tel" autocomplete="tel" placeholder="+49 ..."></label>
-  <label class="wide">E-Mail-Adresse<input id="newCustomerEmail" type="email" autocomplete="email" placeholder="kunde@beispiel.de"></label>
-  <label class="wide">Haarstruktur / aktuelle Haarfarbe / Kundenwünsche<textarea id="newCustomerNotes" rows="2" placeholder="Was möchte der Kunde machen lassen? Haarstruktur, Ausgangsfarbe, Wünsche ..."></textarea></label>
-  <label class="wide">Bisherige Coloration / Farbrezeptur<textarea id="newCustomerFormula" rows="2" placeholder="Bisherige Färbungen oder bekannte Farbrezeptur (optional)"></textarea></label>
-</div>
-</div><label>Leistung<select id="apptService" required><option value="">Leistung auswählen</option></select></label>
-<label class="picker-field"><span class="picker-label"><span class="picker-icon">▦</span> Datum</span><input id="apptDate" type="date" required aria-label="Termindatum"><small>Tippen und Tag im Kalender auswählen</small></label><div class="picker-field time-picker-field"><span class="picker-label"><span class="picker-icon">◷</span> Uhrzeit</span><input id="apptTime" class="visually-hidden-time" type="time" required aria-label="Ausgewählte Uhrzeit"><button id="timePickerToggle" class="time-picker-toggle" type="button" aria-expanded="false"><span id="timePickerValue">Uhrzeit auswählen</span><span class="time-picker-chevron">⌄</span></button><div id="timePickerPanel" class="time-picker-panel" hidden><div class="time-picker-heading">Terminbeginn auswählen</div><div id="timeSlots" class="time-slots"></div></div><small>Gewünschte Uhrzeit antippen</small></div><label>Dauer (Min.)<input id="apptDuration" type="number" min="15" step="15" value="90" required></label><label>Mitarbeiter<select id="apptStaff" required><option value="">Mitarbeiter auswählen</option></select></label><label class="wide">Notiz<input id="apptNote" placeholder="Optionale interne Notiz"></label><button id="appointmentSubmitBtn" class="primary wide" type="submit">Kunde und Termin speichern</button><button id="cancelEditBtn" class="textbtn wide" type="button" hidden>Bearbeitung abbrechen</button></form>
-<div class="panel calendar-panel">
-<div class="panelhead"><h2>Kalender</h2><div class="calendar-controls"><button type="button" class="textbtn" id="calPrev">‹</button><strong id="calLabel"></strong><button type="button" class="textbtn" id="calNext">›</button></div></div>
-<div class="calendar-toolbar"><div class="view-switch"><button type="button" data-calview="day" class="active">Tag</button><button type="button" data-calview="week">Woche</button><button type="button" data-calview="month">Monat</button><button type="button" data-calview="year">Jahr</button></div><button type="button" class="textbtn" id="calToday">Heute</button></div>
-<div id="calendarView" class="calendar-view"></div></div>
-<div class="panel"><div class="panelhead"><h2>Alle Termine</h2></div><div id="appointmentList" class="tablewrap"></div></div></section>
-<section class="page" id="customers"><div class="heading"><div><p class="eyebrow">KUNDENVERWALTUNG</p><h1>Kundenkartei</h1><p class="muted">Kontaktdaten, Haarhistorie und Farbformeln.</p></div></div>
-<form id="customerForm" class="panel formgrid"><label>Name<input id="customerName" required placeholder="Vor- und Nachname"></label><label>Telefon<input id="customerPhone" type="tel" placeholder="+49 ..."></label><label class="wide">E-Mail-Adresse<input id="customerEmail" type="email" autocomplete="email" placeholder="kunde@beispiel.de"></label><label class="wide">Haar- und Kundenhinweise<textarea id="customerNotes" rows="2" placeholder="Haartyp, Wünsche, Besonderheiten ..."></textarea></label><label class="wide">Farbformel / letzte Behandlung<textarea id="customerFormula" rows="2" placeholder="Marke, Farbnummer, Mischverhältnis, Entwickler, Einwirkzeit ..."></textarea></label><button class="primary wide" type="submit">Kundenkarte speichern</button></form>
-<div class="panel"><div class="panelhead"><h2>Gespeicherte Kunden</h2><input id="customerSearch" class="search" placeholder="Kunden suchen …"></div><div id="customerList" class="tablewrap"></div></div></section>
-<section class="page" id="services"><div class="heading"><div><p class="eyebrow">SALONANGEBOT</p><h1>Leistungen & Preise</h1><p class="muted">Die CutStyle-Preisliste vom 26.10.2026 ist bereits eingetragen. Weitere Leistungen kannst du ergänzen.</p></div></div>
-<form id="serviceForm" class="panel formgrid"><label>Kategorie<select id="serviceCategory"><option>Damen</option><option>Herren</option><option>Kosmetik</option></select></label><label>Leistung<input id="serviceName" required placeholder="Leistungsname"></label><label>Preis Kurz / Standard<input id="serviceShort" placeholder="z. B. ab 99 €"></label><label>Preis Lang (optional)<input id="serviceLong" placeholder="z. B. ab 120 €"></label><button class="primary wide">Leistung hinzufügen</button></form><div class="panel"><div id="serviceList" class="tablewrap"></div></div></section>
-<section class="page" id="staff"><div class="heading"><div><p class="eyebrow">TEAM</p><h1>Mitarbeiter</h1><p class="muted">Teamübersicht für die Terminplanung.</p></div></div><form id="staffForm" class="panel formgrid"><label class="wide">Name<input id="staffName" required placeholder="Mitarbeitername"></label><button class="primary wide">Mitarbeiter hinzufügen</button></form><div class="panel"><div id="staffList" class="tablewrap"></div></div></section>
-</main></div></div>
-<script type="module" src="app.js"></script><script>
-if ("serviceWorker" in navigator) { window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js").catch(err => console.warn("Service Worker:", err))); }
-</script></body></html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#111111">
+  <meta name="description" content="CutStyle Salonverwaltung – Termine, Kunden, Leistungen und Team">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <title>CutStyle – Salonverwaltung</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <section id="loginScreen" class="login-screen" hidden>
+    <form id="loginForm" class="login-card">
+      <div class="brand brand-login"><span class="mark">C</span><span><b>CutStyle</b><small>SALONVERWALTUNG</small></span></div>
+      <h1>Anmelden</h1>
+      <p class="muted">Melde dich mit deinem CutStyle-Konto an.</p>
+      <label>E-Mail-Adresse<input id="loginEmail" type="email" autocomplete="username" required></label>
+      <label>Passwort<input id="loginPassword" type="password" autocomplete="current-password" required></label>
+      <button class="primary" type="submit">Anmelden</button>
+      <p id="loginMessage" class="message" role="status"></p>
+    </form>
+  </section>
+
+  <div id="appShell" hidden>
+    <header class="topbar">
+      <div class="brand"><span class="mark">C</span><span><b>CutStyle</b><small>SALONVERWALTUNG</small></span></div>
+      <div class="top-actions"><span id="connectionStatus" class="connection">Verbinde …</span><span id="todayLabel" class="today-label"></span><button id="logoutBtn" class="quiet-btn">Abmelden</button></div>
+    </header>
+
+    <div class="app-layout">
+      <aside class="sidebar" aria-label="Hauptnavigation">
+        <button class="nav active" data-page="dashboard"><span>⌂</span> Übersicht</button>
+        <button class="nav" data-page="appointments"><span>▦</span> Termine</button>
+        <button class="nav" data-page="customers"><span>♙</span> Kundenkartei</button>
+        <button class="nav" data-page="services"><span>✂</span> Leistungen & Preise</button>
+        <button class="nav" data-page="staff"><span>♧</span> Mitarbeiter</button>
+        <div class="side-note">CUTSTYLE · SCHWELM<br><small>Interne Salonverwaltung</small></div>
+      </aside>
+
+      <main class="main-content">
+        <div id="appMessage" class="message" role="status" aria-live="polite"></div>
+
+        <section class="page show" id="dashboard">
+          <div class="page-heading"><div><p class="eyebrow">SALONÜBERSICHT</p><h1>Guten Tag</h1><p class="muted">Alle wichtigen Informationen auf einen Blick.</p></div><button class="primary" data-go="appointments">＋ Neuer Termin</button></div>
+          <div class="stats-grid">
+            <article class="stat-card"><span>Termine heute</span><strong id="statToday">0</strong></article>
+            <article class="stat-card"><span>Kunden</span><strong id="statCustomers">0</strong></article>
+            <article class="stat-card"><span>Aktive Mitarbeiter</span><strong id="statStaff">0</strong></article>
+            <article class="stat-card"><span>Aktive Leistungen</span><strong id="statServices">0</strong></article>
+          </div>
+          <section class="panel"><div class="panel-heading"><div><p class="eyebrow">HEUTE</p><h2>Heutige Termine</h2></div><button class="text-btn" data-go="appointments">Kalender öffnen →</button></div><div id="todayList" class="empty">Noch keine Termine für heute.</div></section>
+          <p class="notice">Deine Daten werden über Supabase synchronisiert. Änderungen sind nach dem Speichern auch auf deinen anderen angemeldeten Geräten verfügbar.</p>
+        </section>
+
+        <section class="page" id="appointments">
+          <div class="page-heading"><div><p class="eyebrow">PLANUNG</p><h1>Termine</h1><p class="muted">Tages-, Wochen-, Monats- und Jahresübersicht.</p></div><button class="primary" id="newAppointmentBtn">＋ Termin anlegen</button></div>
+          <div class="panel calendar-panel">
+            <div class="calendar-toolbar"><div class="calendar-nav"><button id="calPrev" class="icon-btn" aria-label="Zurück">‹</button><button id="calToday" class="quiet-btn">Heute</button><button id="calNext" class="icon-btn" aria-label="Weiter">›</button><strong id="calLabel"></strong></div><div class="view-switch"><button data-calview="day">Tag</button><button data-calview="week" class="active">Woche</button><button data-calview="month">Monat</button><button data-calview="year">Jahr</button></div></div>
+            <div id="calendarView" class="calendar-view"></div>
+          </div>
+          <section class="panel" id="appointmentEditor">
+            <div class="panel-heading"><div><p class="eyebrow">TERMINVERWALTUNG</p><h2 id="appointmentFormTitle">Neuen Termin anlegen</h2></div><button id="cancelAppointmentEdit" class="quiet-btn" type="button" hidden>Abbrechen</button></div>
+            <form id="appointmentForm" class="form-grid">
+              <label class="span-2">Kunde<select id="apptCustomer" required><option value="">Kunde auswählen</option></select></label>
+              <label>Leistung<select id="apptService" required><option value="">Leistung auswählen</option></select></label>
+              <label>Mitarbeiter<select id="apptStaff" required><option value="">Mitarbeiter auswählen</option></select></label>
+              <label>Datum<input id="apptDate" type="date" required></label>
+              <label>Startzeit<input id="apptTime" type="time" step="900" required></label>
+              <label>Dauer in Minuten<input id="apptDuration" type="number" min="5" step="5" value="60" required></label>
+              <label>Preis (€)<input id="apptPrice" type="number" min="0" step="0.01" placeholder="Optional"></label>
+              <label class="span-2">Interne Notiz<textarea id="apptNote" rows="2" placeholder="Optionale Notiz"></textarea></label>
+              <div class="form-actions span-2"><button class="primary" id="appointmentSubmitBtn" type="submit">Termin speichern</button><button class="quiet-btn" id="cancelAppointmentEdit2" type="button" hidden>Bearbeitung abbrechen</button></div>
+            </form>
+          </section>
+          <section class="panel"><div class="panel-heading"><div><p class="eyebrow">ÜBERSICHT</p><h2>Alle Termine</h2></div><select id="appointmentFilter" class="compact-select"><option value="all">Alle</option><option value="booked">Gebucht</option><option value="cancelled">Storniert</option></select></div><div id="appointmentList" class="table-wrap"></div></section>
+        </section>
+
+        <section class="page" id="customers">
+          <div class="page-heading"><div><p class="eyebrow">KUNDENVERWALTUNG</p><h1>Kundenkartei</h1><p class="muted">Kontaktdaten, Haarhinweise und Farbformeln verwalten.</p></div></div>
+          <section class="panel">
+            <div class="panel-heading"><div><p class="eyebrow">KUNDENKARTE</p><h2 id="customerFormTitle">Neuen Kunden anlegen</h2></div><button id="cancelCustomerEdit" class="quiet-btn" type="button" hidden>Abbrechen</button></div>
+            <form id="customerForm" class="form-grid">
+              <label>Vorname<input id="customerFirstName" required></label>
+              <label>Nachname<input id="customerLastName"></label>
+              <label>Telefon<input id="customerPhone" type="tel"></label>
+              <label>E-Mail<input id="customerEmail" type="email"></label>
+              <label class="span-2">Haar- und Kundenhinweise<textarea id="customerNotes" rows="2" placeholder="Haartyp, Wünsche, Besonderheiten …"></textarea></label>
+              <label class="span-2">Farbformel / letzte Behandlung<textarea id="customerFormula" rows="2" placeholder="Farbnummer, Mischverhältnis, Entwickler, Einwirkzeit …"></textarea></label>
+              <div class="form-actions span-2"><button class="primary" id="customerSubmitBtn" type="submit">Kundenkarte speichern</button><button id="cancelCustomerEdit2" class="quiet-btn" type="button" hidden>Bearbeitung abbrechen</button></div>
+            </form>
+          </section>
+          <section class="panel"><div class="panel-heading"><h2>Gespeicherte Kunden</h2><input id="customerSearch" class="search-input" placeholder="Name oder Telefon suchen …"></div><div id="customerList" class="table-wrap"></div></section>
+        </section>
+
+        <section class="page" id="services">
+          <div class="page-heading"><div><p class="eyebrow">SALONANGEBOT</p><h1>Leistungen & Preise</h1><p class="muted">Preise und Behandlungsdauer kannst du jederzeit hier ändern.</p></div></div>
+          <section class="panel">
+            <div class="panel-heading"><div><p class="eyebrow">LEISTUNG</p><h2 id="serviceFormTitle">Neue Leistung anlegen</h2></div><button id="cancelServiceEdit" class="quiet-btn" type="button" hidden>Abbrechen</button></div>
+            <form id="serviceForm" class="form-grid">
+              <label>Kategorie<select id="serviceCategory"><option>Damen</option><option>Herren</option><option>Kosmetik</option></select></label>
+              <label>Leistungsname<input id="serviceName" required></label>
+              <label>Preis ab / Kurz (€)<input id="servicePriceFrom" type="number" min="0" step="0.01"></label>
+              <label>Preis bis / Lang (€)<input id="servicePriceTo" type="number" min="0" step="0.01"></label>
+              <label>Behandlungsdauer (Minuten)<input id="serviceDuration" type="number" min="5" step="5" placeholder="Noch nicht festgelegt"></label>
+              <label>Preis-Hinweis<input id="servicePriceNote" placeholder="z. B. Festpreis oder ab Preis"></label>
+              <label class="checkbox-label span-2"><input id="serviceActive" type="checkbox" checked> Leistung ist aktiv und buchbar</label>
+              <div class="form-actions span-2"><button class="primary" id="serviceSubmitBtn" type="submit">Leistung speichern</button><button id="cancelServiceEdit2" class="quiet-btn" type="button" hidden>Bearbeitung abbrechen</button></div>
+            </form>
+          </section>
+          <section class="panel"><div class="panel-heading"><h2>Leistungsliste</h2><label class="checkbox-label"><input id="showInactiveServices" type="checkbox"> Inaktive anzeigen</label></div><div id="serviceList" class="table-wrap"></div></section>
+        </section>
+
+        <section class="page" id="staff">
+          <div class="page-heading"><div><p class="eyebrow">TEAM</p><h1>Mitarbeiter</h1><p class="muted">Team und Einsatzstatus verwalten.</p></div></div>
+          <section class="panel"><div class="panel-heading"><div><p class="eyebrow">TEAMMITGLIED</p><h2 id="staffFormTitle">Mitarbeiter hinzufügen</h2></div><button id="cancelStaffEdit" class="quiet-btn" type="button" hidden>Abbrechen</button></div>
+            <form id="staffForm" class="form-grid"><label class="span-2">Name<input id="staffName" required></label><label class="checkbox-label span-2"><input id="staffActive" type="checkbox" checked> Mitarbeiter ist aktiv</label><div class="form-actions span-2"><button class="primary" id="staffSubmitBtn" type="submit">Mitarbeiter speichern</button><button id="cancelStaffEdit2" class="quiet-btn" type="button" hidden>Bearbeitung abbrechen</button></div></form>
+          </section>
+          <section class="panel"><div class="panel-heading"><h2>Teamübersicht</h2><label class="checkbox-label"><input id="showInactiveStaff" type="checkbox"> Inaktive anzeigen</label></div><div id="staffList" class="table-wrap"></div></section>
+        </section>
+      </main>
+    </div>
+  </div>
+  <script type="module" src="app.js"></script>
+  <script>if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));}</script>
+</body>
+</html>
